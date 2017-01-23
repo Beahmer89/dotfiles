@@ -1,0 +1,17 @@
+[core]
+	editor = vim
+[mergegit]
+	tool = vimdiff
+[diff]
+    tool = vimdiff
+[difftool]
+    prompt = false
+[user]
+	name = David Beahm
+	email = davidb@aweber.com
+[alias]
+	l = log --oneline
+	lg = log --oneline --graph --decorate
+    forcepull = "!git fetch ; git reset --hard @{u}"
+[credential]
+	helper = osxkeychain
