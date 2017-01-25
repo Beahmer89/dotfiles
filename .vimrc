@@ -7,19 +7,26 @@ set autoindent
 
 set modeline
 
-set smartcase       " When searching try to be smart about cases
-set hlsearch        " set highlight search on by default
-set incsearch       " hightlight search terms as you type
+set smartcase           " When searching try to be smart about cases
+set hlsearch            " set highlight search on by default
+set incsearch           " hightlight search terms as you type
 
-set title           " change terminals title
-set wildmenu        " turn on wild menu, meaning :<TAB> will show available options
-set ruler           " always use current position"
-set number          " set line numbers by default
-set hidden          " allow you to open new file without having to save current file first
-set noswapfile      " do not have swap file
-set foldenable      " enable folding
+set title               " change terminals title
+set wildmenu            " turn on wild menu, meaning :<TAB> will show available options
+set wildmode=list:full  " show a list when pressing tab and complete
+                        "    first full match
+set wildignore=*.swp,*.bak,*.pyc,*.class
 
-set laststatus=2    " Always show the status line
+set ttyfast             " always use a fast terminal
+set cursorline          " underline the current line, for quick orientation
+set ruler               " always use current position"
+set number              " set line numbers by default
+set hidden              " allow you to open new file without having to save current file first
+set noswapfile          " do not have swap file
+set foldenable          " enable folding
+set autoread            " automatically reload files changed outside of Vim
+
+set laststatus=2        " Always show the status line
 set statusline+=%t%r\ %y[%{&ff},%{strlen(&fenc)?&fenc:'none'}]\ %{FileSize()}\ %m%=%P\ Lines:%l/%L
 
 "Know the type of file"
@@ -43,6 +50,25 @@ nnoremap <Leader>rw :%s/\s\+$//e<CR>
 "using ,cs will remove the last search term to stop highlighting"
 nnoremap <Leader>cs :let @/ = ""<CR>
 
+" Toggle line numbers
+nnoremap <Leader>n :setlocal number!<CR>
+
+" Toggle relative numbers
+nnoremap <Leader>r :set relativenumber!<cr>
+
+" Toggle colorcolmun numbers
+nnoremap <Leader>sc :set colorcolumn=80<cr>
+
+" Toggle colorcolmun numbers
+nnoremap <Leader>nc :set colorcolumn=0<cr>
+
+" Swap implementations of ` and ' jump to markers
+" By default, ' jumps to the marked line, ` jumps to the marked line and
+" column, so swap them
+nnoremap ' `
+nnoremap ` '
+
+"
 "disable arrow keys in Escape mode :)
 "map <up> <nop>
 "map <down> <nop>
