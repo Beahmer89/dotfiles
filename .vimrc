@@ -27,40 +27,56 @@ set foldenable          " enable folding
 set autoread            " automatically reload files changed outside of Vim
 
 set laststatus=2        " Always show the status line
-set statusline+=%t%r\ %y[%{&ff},%{strlen(&fenc)?&fenc:'none'}]\ %{FileSize()}\ %m%=%P\ Lines:%l/%L
+
+"Manual setting of status line
+"set statusline+=%t%r\ %y[%{&ff},%{strlen(&fenc)?&fenc:'none'}]\ %{FileSize()}\ %m%=%P\ Lines:%l/%L
+
+"Allow buffers to automatically be displayed when only one tab open
+let g:airline#extensions#tabline#enabled = 1
+
+"Seperator for buffers set to space
+let g:airline#extensions#tabline#left_sep = ' '
+let g:airline_left_sep = '▶'
 
 "Know the type of file"
 filetype indent plugin on
 
-"have syntax highlighting enabled"
+"have syntax highlighting enabled
 syntax on
 
-"display what file is open in title"
+"allow installation of vim plugins in ~/.vim/bundle
+execute pathogen#infect()
+
+"display what file is open in title
 let &titleold=getcwd()
 
-"set leader to ,"
+"set leader to ,
 let mapleader=","
 
-"show any whitespace"
+"show any whitespace
 match ErrorMsg '\s\+$'
 
-"using ,rw will delete all whitespace within file"
+"Jedi key re-mappings
+"let g:jedi#usages_command = '<Leader>u'
+"let g:jedi#goto_assignments_command = '<Leader>a'
+
+"using ,rw will delete all whitespace within file
 nnoremap <Leader>rw :%s/\s\+$//e<CR>
 
-"using ,cs will remove the last search term to stop highlighting"
+"using ,cs will remove the last search term to stop highlighting
 nnoremap <Leader>cs :let @/ = ""<CR>
 
 " Toggle line numbers
-nnoremap <Leader>n :setlocal number!<CR>
+nnoremap <Leader>sn :setlocal number!<CR>
 
 " Toggle relative numbers
-nnoremap <Leader>r :set relativenumber!<cr>
+nnoremap <Leader>sr :set relativenumber!<cr>
 
 " Toggle colorcolmun numbers
 nnoremap <Leader>sc :set colorcolumn=80<cr>
 
 " Toggle colorcolmun numbers
-nnoremap <Leader>nc :set colorcolumn=0<cr>
+nnoremap <Leader>dc :set colorcolumn=0<cr>
 
 " Swap implementations of ` and ' jump to markers
 " By default, ' jumps to the marked line, ` jumps to the marked line and
@@ -86,6 +102,7 @@ nnoremap ` '
 
 "setting colorscheme to eflord which is in /usr/share/vim/vim70/colors
 colorscheme eva01
+"colorscheme eva
 
 "this funciton will highlight the status bar to a different color when in
 ""insertion mode
@@ -95,14 +112,15 @@ function! InsertStatuslineColor(mode)
     endif
 endfunction
 
-au InsertEnter *.* call InsertStatuslineColor(v:insertmode)
-au InsertLeave *.* hi statusline ctermbg=LightCyan ctermfg=Black
-
+"Setting statusline colors
+"au InsertEnter *.* call InsertStatuslineColor(v:insertmode)
+"au InsertLeave *.* hi statusline ctermbg=LightCyan ctermfg=Black
+"
 hi ErrorMsg ctermbg=DarkRed guibg=DarkRed
-
-hi StatusLine ctermbg=lightCyan ctermfg=black
-
-hi Search cterm=NONE ctermfg=blue ctermbg=white
+"
+"hi StatusLine ctermbg=lightCyan ctermfg=black
+"
+"hi Search cterm=NONE ctermfg=blue ctermbg=white
 
 "function to get the size of the file
 function! FileSize()
