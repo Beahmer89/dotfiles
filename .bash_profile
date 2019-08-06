@@ -78,7 +78,7 @@ fck() {
 
 # Find servers
 svrsearch() {
-    for domainname in some.end.of.domain another.domain.ending; do
+    for domainname in some.end.of.domain another.domain.ending ; do
         dig -t AXFR $domainname | grep -v ";"
     done
 }
