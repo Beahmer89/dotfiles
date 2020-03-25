@@ -6,6 +6,8 @@ export CLICOLOR=1
 ##export LSCOLORS=ExGxBxDxCxEgEdxbxgxcxd
 export LSCOLORS=GxFxCxDxBxegedabagaced
 
+export GOPATH=$HOME/go
+
 ## note \[\e[1;32m\] begins the tag for colour and  \[\e[m\] ends the tag
 export PS1="\[\e[0;35m\]\u@\[\e[m\]\[\e[1;34m\]\h\[\e[m\] \[\e[1;32m\][ \[\e[m\] \[\e[1;37m\]\w\[\e[m\] \[\e[1;32m\] ]\[\e[m\]\[\e[1;36m\]\$(git_branch)\[\e[m\] \[\e[1;33m\]\$\[\e[m\] "
 
@@ -21,18 +23,23 @@ alias f="fg"
 ##list all dirs, files, and owner
 alias ll="ls -al"
 
+##use macvim instead of vim
+alias vim="mvim -v"
+
 ##going back x number of dirs
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias .....="cd ../../../.."
 alias ......="cd ../../../../.."
+alias .......="cd ../../../../../.."
+alias ........="cd ../../../../../../.."
 
 #bring up todo list
-alias todo="vim /Users/davidb/Documents/todo.txt"
+alias todo="vim /Users/dbeahm/Documents/todo.txt"
 
 ##bring up list to remember stuff
-alias cache="vim /Users/davidb/Documents/cache.txt"
+alias cache="vim /Users/dbeahm/Documents/cache.txt"
 
 ##start up the virtual env
 alias start="source env/bin/activate"
@@ -67,13 +74,13 @@ function cleanup() {
 }
 
 ##sub out things in files
-function sub(){
-    #can be done in shell command
-}
+#function sub(){
+#    #can be done in shell command
+#}
 
 ##Run flake8 for formatting on python files
 fck() {
-    /Users/davidb/scripts/formatting.py
+    /Users/dbeahm/scripts/formatting.py
 }
 
 # Find servers
@@ -121,7 +128,7 @@ lookup() {
 lgrep() {
     if [ -n "$1" ]
     then
-        eval grep -r --color --exclude-dir={env,.git,.tox} --exclude={*.pyc,*.cfg} $1 .
+        eval grep -r --color --exclude-dir={env,.git,.tox,.eggs} --exclude={*.pyc,*.cfg} $1 .
     else
         echo "Please provide an argument: lgrep arg1 | 'arg1 arg1'"
     fi
@@ -152,22 +159,21 @@ sshs() {
 
 # kill vim instances that are terminated/zombie processes
 klv() {
-    files=($(jobs | awk '{ print $4 }' | fzf --reverse -m))
+    files=($(jobs | awk '{ print $5 }' | fzf --reverse -m))
     if [[ ${#files[@]} -eq 1 ]]; then
-        pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=${files[@]} '$4 ~ file {print $1}'))
+        pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=${files[@]} '$6 ~ file {print $1}'))
         kill -9 $pid
     else
         for file in "${files[@]}";
         do
-            pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=$file '$4 ~ file {print $1}'))
+            pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=$file '$6 ~ file {print $1}'))
             eval kill -9 $pid
         done
     fi
 
 }
 
-source ~/gitScript/git-completion.bash
-source ~/.bash_aliases
+source ~/scripts/git-completion.bash
 
 
 # pip bash completion start
