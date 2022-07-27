@@ -134,3 +134,4 @@ else
     return (bytes / 1024) . "K"
 endif
 endfunction
+au BufNewFile,BufRead Jenkinsfile setf groovy
