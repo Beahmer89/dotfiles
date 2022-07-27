@@ -1,8 +1,11 @@
 # If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+#PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/jamf/bin:/usr/local/jamf/bin:/usr/local/jamf/bin
+export PATH=$HOME/.poetry/bin:/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/david/.oh-my-zsh"
+export ZSH="/Users/dbeahm/.oh-my-zsh"
+#export ASDF_DIR=/usr/local/Cellar/asdf/0.9.0/libexec
+export ASDF_DIR=/usr/local/opt/asdf/libexec
 
 # Turn off warnigs about share dir not having correct permissions
 ZSH_DISABLE_COMPFIX=true
@@ -14,7 +17,7 @@ unsetopt BEEP
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="pygmalion"
+ZSH_THEME="pygmalion-virtualenv"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -74,7 +77,7 @@ CASE_SENSITIVE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(virtualenv git aws)
 
 export EDITOR=vim
 
@@ -102,6 +105,8 @@ source $ZSH/oh-my-zsh.sh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
 
+# alias to always print timestamp for history
+#alias history="history -E"
 ##create alias for putting mac to sleep
 alias slp="pmset sleepnow"
 
@@ -115,7 +120,7 @@ alias f="fg"
 alias ll="ls -alh"
 
 ##use macvim instead of vim
-# alias vim="mvim -v"
+alias vim="mvim -v"
 
 ##going back x number of dirs
 alias ..="cd .."
@@ -133,28 +138,27 @@ alias start="source env/bin/activate"
 alias stop="deactivate"
 
 # Functions
-##initialize virtual env
-function ptpython(){
-    ptpython="$(which ptpython)"
-    eval "${ptpython}" --vi
+function ptp(){
+    ptpython --vi
 }
 
 function takedown(){
-    eval docker-compose -p $1 down --remove-orphans --volumes
+    docker-compose -p $1 down --remove-orphans --volumes
 }
 
 function cleanup() {
-    eval docker system prune --volumes
+    docker system prune --volumes
 }
 
-##sub out things in files
-#function sub(){
-#    #can be done in shell command
-#}
+#sub out things in files
+function sub(){
+    #can be done in shell command
+    python $HOME/scripts/replace $1 $2
+}
 
 ##Run flake8 for formatting on python files
-fck() {
-    $HOME/scripts/formatting.py
+function f8() {
+    python $HOME/scripts/format
 }
 
 # Find servers
@@ -187,7 +191,7 @@ lookup() {
                     if [ $3 == $location ]
                     then
                         echo /usr/local/bin/http "https://some.servce.$3.com/$1/$2"
-                        eval /usr/local/bin/http "https://some.service$3.com/$1/$2"
+                        /usr/local/bin/http "https://some.service$3.com/$1/$2"
                     fi
                 done
             else
@@ -202,7 +206,7 @@ lookup() {
 lgrep() {
     if [ -n "$1" ]
     then
-        grep -r --color --exclude-dir={env,.git,.tox,.eggs} --exclude={'*.pyc','*.cfg'} $1 .
+        grep -r --color --exclude-dir={env,.git,.tox,.eggs,.local} --exclude={'*.pyc','*.cfg'} $1 .
     else
         echo "Please provide an argument: lgrep arg1 | 'arg1 arg1'"
     fi
@@ -232,8 +236,8 @@ sshs() {
 }
 
 # kill vim instances that are terminated/zombie processes
-klv() {
-    files=($(jobs | awk '{ print $5 }' | fzf --reverse -m))
+ko() {
+    files=($(jobs | awk '{ if (NF == 5) {print $5} else{ print $6 }}' | fzf --reverse -m))
     if [[ ${#files[@]} -eq 1 ]]; then
         pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=${files[@]} '$6 ~ file {print $1}'))
         kill -9 $pid
@@ -241,8 +245,20 @@ klv() {
         for file in "${files[@]}";
         do
             pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=$file '$6 ~ file {print $1}'))
-            eval kill -9 $pid
+            kill -9 $pid
         done
     fi
 
 }
+
+#. /usr/local/opt/asdf/asdf.sh
+. /usr/local/opt/asdf/libexec/asdf.sh
+
+# Added by serverless binary installer
+export PATH="$HOME/.serverless/bin:$PATH"
+
+
+export PATH="$HOME/.poetry/bin:$PATH"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/terraform terraform
