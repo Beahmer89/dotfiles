@@ -1,0 +1,4 @@
+git@github.com:nvie/vim-flake8.git
+git@github.com:vim-airline/vim-airline.git
+git@github.com:davidhalter/jedi-vim.git
+

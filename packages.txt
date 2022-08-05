@@ -1,0 +1,11 @@
+macvim
+asdf
+fzf
+htop
+httpie
+jq
+ngrok
+postgresql
+tmux
+tree
+watch
