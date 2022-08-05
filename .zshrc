@@ -4,8 +4,12 @@ export PATH=$HOME/.poetry/bin:/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/dbeahm/.oh-my-zsh"
-#export ASDF_DIR=/usr/local/Cellar/asdf/0.9.0/libexec
-export ASDF_DIR=/usr/local/opt/asdf/libexec
+export ASDF_DIR=/opt/homebrew/opt/asdf/libexec
+
+# command to get asdf to work "echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh"
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+
+eval $(/opt/homebrew/bin/brew shellenv)
 
 # Turn off warnigs about share dir not having correct permissions
 ZSH_DISABLE_COMPFIX=true
@@ -158,7 +162,7 @@ function sub(){
 
 ##Run flake8 for formatting on python files
 function f8() {
-    python $HOME/scripts/format
+    python $HOME/scripts/formatting
 }
 
 # Find servers
@@ -252,11 +256,7 @@ ko() {
 }
 
 #. /usr/local/opt/asdf/asdf.sh
-. /usr/local/opt/asdf/libexec/asdf.sh
-
-# Added by serverless binary installer
-export PATH="$HOME/.serverless/bin:$PATH"
-
+#. /usr/local/opt/asdf/libexec/asdf.sh
 
 export PATH="$HOME/.poetry/bin:$PATH"
 
