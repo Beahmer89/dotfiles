@@ -53,6 +53,9 @@ let &titleold=getcwd()
 "set leader to ,
 let mapleader=","
 
+"go-vim helpers auto complete"
+au filetype go inoremap <buffer> . .<C-x><C-o>
+
 "show any whitespace
 match ErrorMsg '\s\+$'
 

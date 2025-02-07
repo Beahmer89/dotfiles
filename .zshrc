@@ -1,10 +1,9 @@
 # If you come from bash you might have to change your $PATH.
 #PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/jamf/bin:/usr/local/jamf/bin:/usr/local/jamf/bin
 export PATH=$HOME/.poetry/bin:/bin:/usr/local/bin:$PATH
+export PATH=$PATH:$(go env GOPATH)/bin
 
-# Path to your oh-my-zsh installation.
-export ZSH="/Users/dbeahm/.oh-my-zsh"
-export ASDF_DIR=/opt/homebrew/opt/asdf/libexec
+#export ASDF_DIR=/opt/homebrew/opt/asdf/libexec
 
 # command to get asdf to work "echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh"
 . /opt/homebrew/opt/asdf/libexec/asdf.sh
@@ -17,11 +16,15 @@ ZSH_DISABLE_COMPFIX=true
 # Turn off all beeps
 unsetopt BEEP
 
+DISABLE_UNTRACKED_FILES_DIRTY="true"
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="pygmalion-virtualenv"
+#ZSH_THEME="pygmalion-virtualenv"
+#ZSH_THEME="fino"
+ZSH_THEME="gentoo"
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -85,9 +88,11 @@ plugins=(virtualenv git aws)
 
 export EDITOR=vim
 
-source $ZSH/oh-my-zsh.sh
+# Path to your oh-my-zsh installation.
+export ZSH="/Users/dj.beahm/.oh-my-zsh"
 
 # User configuration
+source $ZSH/oh-my-zsh.sh
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -141,6 +146,18 @@ alias start="source env/bin/activate"
 ##stop virtual env
 alias stop="deactivate"
 
+## SSO via commandline
+alias sso-prod="aws sso login --profile prod && aws-prod"
+alias sso-stage="aws sso login --profile stage && aws-stage"
+alias sso-test="aws sso login --profile test && aws-test"
+alias sso-dev="aws sso login --profile dev && aws-dev"
+
+## Change aws profiles
+alias aws-prod="export AWS_PROFILE=prod"
+alias aws-stage="export AWS_PROFILE=stage"
+alias aws-test="export AWS_PROFILE=test"
+alias aws-dev="export AWS_PROFILE=dev"
+
 # Functions
 function ptp(){
     ptpython --vi
@@ -163,6 +180,27 @@ function sub(){
 ##Run flake8 for formatting on python files
 function f8() {
     python $HOME/scripts/formatting
+}
+
+## Get token for db
+function get_token() {
+    aws-prod
+    token=$($HOME/scripts/auth-token stage eng old | grep -A 100 Token: | tail -n1)
+    export PGPASSWORD=$token
+}
+
+## Get token for db
+function get_token_new_stage() {
+    aws-stage
+    token=$($HOME/scripts/auth-token stage eng new | grep -A 100 Token: | tail -n1)
+    export PGPASSWORD=$token
+}
+
+## Get token for db
+function get_token_new_dev() {
+    aws-dev
+    token=$($HOME/scripts/auth-token dev eng new | grep -A 100 Token: | tail -n1)
+    export PGPASSWORD=$token
 }
 
 # Find servers
@@ -253,6 +291,33 @@ ko() {
         done
     fi
 
+}
+
+timezsh() {
+    shell=${1-$SHELL}
+    for i in $(seq 1 10); do /usr/bin/time $shell -i -c exit; done
+}
+
+mkpy() {
+    file_name="$1"
+    # Check if a filename is provided
+    if [[ -z "$file_name" ]]; then
+        echo "Please provide a filename."
+        return 1
+    fi
+
+    # Create basic file
+    cat > "$file_name" <<EOF
+
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
+EOF
+
+    echo "Python file '$file_name' created successfully."
 }
 
 #. /usr/local/opt/asdf/asdf.sh
