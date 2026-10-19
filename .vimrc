@@ -47,6 +47,29 @@ syntax on
 "allow installation of vim plugins in ~/.vim/bundle
 execute pathogen#infect()
 
+if executable('solargraph')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'solargraph',
+        \ 'cmd': ['solargraph', 'stdio'],
+        \ 'allowlist': ['ruby'],
+        \ })
+endif
+
+" Enable auto-completion
+autocmd FileType ruby setlocal omnifunc=lsp#complete
+
+" Key mappings for LSP functions
+" Go to definition
+nnoremap <silent> gd :LspDefinition<CR>
+" Show documentation
+nnoremap <silent> K :LspHover<CR>
+" Find references
+nnoremap <silent> gr :LspReferences<CR>
+" Go to implementation
+nnoremap <silent> gi :LspImplementation<CR>
+" Rename symbol
+nnoremap <silent> gR :LspRename<CR>
+
 "display what file is open in title
 let &titleold=getcwd()
 
@@ -60,6 +83,7 @@ au filetype go inoremap <buffer> . .<C-x><C-o>
 match ErrorMsg '\s\+$'
 
 "Jedi key re-mappings
+let g:jedi#force_py_version = 312
 "let g:jedi#usages_command = '<Leader>u'
 "let g:jedi#goto_assignments_command = '<Leader>a'
 

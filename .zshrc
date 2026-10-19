@@ -10,6 +10,10 @@ export PATH=$PATH:$(go env GOPATH)/bin
 
 eval $(/opt/homebrew/bin/brew shellenv)
 
+# after brew shellenv so asdf shims take precedence over brew binaries
+export ASDF_DATA_DIR=/Users/dj.beahm/.asdf
+export PATH="$ASDF_DATA_DIR/shims:$PATH"
+
 # Turn off warnigs about share dir not having correct permissions
 ZSH_DISABLE_COMPFIX=true
 
@@ -279,18 +283,30 @@ sshs() {
 
 # kill vim instances that are terminated/zombie processes
 ko() {
-    files=($(jobs | awk '{ if (NF == 5) {print $5} else{ print $6 }}' | fzf --reverse -m))
-    if [[ ${#files[@]} -eq 1 ]]; then
-        pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=${files[@]} '$6 ~ file {print $1}'))
-        kill -9 $pid
-    else
-        for file in "${files[@]}";
-        do
-            pid=($(ps axo pid=,stat=,command= | awk '$2~/^T/' | awk -v file=$file '$6 ~ file {print $1}'))
-            kill -9 $pid
-        done
+    # Get stopped jobs with job numbers from current session only
+    jobs_list=$(jobs -l | grep -E 'stopped|suspended')
+
+    if [[ -z "$jobs_list" ]]; then
+        echo "No stopped jobs in current session"
+        return
     fi
 
+    # Let user select jobs
+    selected=$(echo "$jobs_list" | fzf --reverse -m)
+
+    if [[ -z "$selected" ]]; then
+        echo "No selection made"
+        return
+    fi
+
+    # Extract job numbers and kill them
+    echo "$selected" | while read line; do
+        job_num=$(echo "$line" | grep -oE '^\[[0-9]+\]' | tr -d '[]')
+        if [[ -n "$job_num" ]]; then
+            kill -9 %$job_num
+            echo "Killed job $job_num: $(echo "$line" | awk '{for(i=4;i<=NF;i++) printf "%s ", $i; print ""}')"
+        fi
+    done
 }
 
 timezsh() {
